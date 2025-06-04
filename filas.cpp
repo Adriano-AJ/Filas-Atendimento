@@ -3,7 +3,7 @@ using namespace std;
 
 struct No
 {
-	int dado = 0;
+	int dado;
 	No *prox;
 };
 
@@ -39,10 +39,10 @@ int count(Fila *f)
 	return qtde;
 }
 
-void enqueue(Fila *f)
+void enqueue(Fila *f, int v)
 {	
 	No *no = new No;
-	no->dado = ;
+	no->dado = v;
 	no->prox = NULL;
 	if (isEmpty(f))
 	{
@@ -53,8 +53,6 @@ void enqueue(Fila *f)
    	    f->fim->prox = no;		
 	}
 	f->fim = no;
-	
-	cout << "Senha gerada:" << no->dado << endl;
 }
 
 int dequeue(Fila *f)
@@ -73,14 +71,9 @@ int dequeue(Fila *f)
 		{
 			f->fim = NULL;
 		}
-		free(no);
+		delete no;
 	}
 	return ret;
-}
-
-void realizarAtendimento(Fila *f, Fila *sa){
-	int valor = dequeue(f);
-	enqueue(sa);
 }
 
 int main(int argc, char** argv)
@@ -91,9 +84,11 @@ int main(int argc, char** argv)
 	Fila *senhasAtendidas;
 	senhasAtendidas = init();
 	
-	do{
-		int option;
+	int ultimaSenha = 0;
+	int option;
 	
+	do{
+		
 		cout << "-------------------------------------" << endl;
 		cout << "| MENU                               |" << endl;
 		cout << "-------------------------------------" << endl;
@@ -107,18 +102,29 @@ int main(int argc, char** argv)
 		
 		switch(option){
 			case 0:
-				cout << "0" << endl;
+				if(!isEmpty(senhasGeradas)){
+					cout << "Ainda ha senhas aguardando atendimento." << endl;
+					option = -1;
+				}
 				break;
 			case 1:
-				enqueue(senhasGeradas);
+				ultimaSenha++;
+				enqueue(senhasGeradas, ultimaSenha);
+				cout << "Senha gerada: " << ultimaSenha << endl;
 				break;
 			case 2:
-				cout << "2" << endl;
+				if (!isEmpty(senhasGeradas)) {
+                    int senhaAtendida = dequeue(senhasGeradas);
+                    enqueue(senhasAtendidas, senhaAtendida);
+                    cout << "Atendendo senha: " << senhaAtendida << endl;
+                } else {
+                    cout << "Nenhuma senha para atender!" << endl;
+                }
 				break;
 			default:
 				cout << "Escolha uma opcao!" << endl;
 		}
-	}while(isEmpty(senhasGeradas) != true);
+	}while(option != 0);
 	
 	
 	return 0;
